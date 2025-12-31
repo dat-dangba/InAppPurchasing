@@ -25,7 +25,7 @@ public abstract class BaseIAPManager<INSTANCE> : MonoBehaviour
 
     public bool IsConnected { get; private set; }
 
-
+    protected abstract GameObject GetLoading();
     protected abstract void OnConnectCompleted(bool success);
     protected abstract void OnPurchaseCompleted(bool success, Product product);
 
@@ -269,6 +269,7 @@ public abstract class BaseIAPManager<INSTANCE> : MonoBehaviour
             return;
         }
 
+        GetLoading().SetActive(true);
         isPurchasing = true;
         this.OnPurchaseProduct = OnPurchaseProduct;
         productIdPurchase = GetProductId(productId);
@@ -299,6 +300,7 @@ public abstract class BaseIAPManager<INSTANCE> : MonoBehaviour
         yield return new WaitForEndOfFrame();
         isPurchasing = false;
         productIdPurchase = "";
+        GetLoading().SetActive(false);
         OnPurchaseCompleted(success, product);
         OnPurchaseProduct?.Invoke(success, product);
     }
