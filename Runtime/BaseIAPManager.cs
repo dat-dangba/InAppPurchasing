@@ -220,11 +220,11 @@ public abstract class BaseIAPManager<INSTANCE> : MonoBehaviour
         Debug.Log($"iap - Purchase fetched cartItems {cartItems.Count}");
         foreach (var item in cartItems)
         {
-            // if (item.Product.definition.type is ProductType.NonConsumable or ProductType.Subscription)
-            // {
-            Debug.Log($"iap - Purchase fetched {item.Product.definition.id}");
-            purchasedProductIds.Add(item.Product.definition.id);
-            // }
+            if (item.Product.definition.type is ProductType.NonConsumable or ProductType.Subscription)
+            {
+                Debug.Log($"iap - Purchase fetched {item.Product.definition.id}");
+                purchasedProductIds.Add(item.Product.definition.id);
+            }
         }
     }
 
@@ -301,11 +301,6 @@ public abstract class BaseIAPManager<INSTANCE> : MonoBehaviour
         isPurchasing = false;
         productIdPurchase = "";
         GetLoading().SetActive(false);
-        if (success && purchasedProductIds.Contains(product.definition.id))
-        {
-            purchasedProductIds.Remove(product.definition.id);
-        }
-
         OnPurchaseCompleted(success, product);
         OnPurchaseProduct?.Invoke(success, product);
     }
