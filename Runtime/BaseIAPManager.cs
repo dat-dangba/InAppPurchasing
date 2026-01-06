@@ -7,8 +7,8 @@ using UnityEngine.Purchasing;
 
 public abstract class BaseIAPManager<INSTANCE> : MonoBehaviour
 {
-    [SerializeField] private bool isUseDefaultPrice;
-    [SerializeField] private List<IAPProduct> iapProducts;
+    [SerializeField] protected bool isUseDefaultPrice;
+    [SerializeField] protected List<IAPProduct> iapProducts;
 
     public static INSTANCE Instance { get; private set; }
 
