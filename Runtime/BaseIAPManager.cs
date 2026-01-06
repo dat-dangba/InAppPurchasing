@@ -12,7 +12,7 @@ public abstract class BaseIAPManager<INSTANCE> : MonoBehaviour
 
     public static INSTANCE Instance { get; private set; }
 
-    private StoreController storeController;
+    protected StoreController storeController;
 
     private List<string> purchasedProductIds = new();
 
