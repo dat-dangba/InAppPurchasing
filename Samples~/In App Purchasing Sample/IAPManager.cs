@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.Purchasing;
 using UnityEngine.UI;
 
-namespace IAPSample
+namespace DBD.InAppPurchasing.Sample
 {
     public class IAPManager : BaseIAPManager<IAPManager>
     {
