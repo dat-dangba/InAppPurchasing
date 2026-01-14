@@ -299,12 +299,12 @@ namespace DBD.InAppPurchasing
 
         private IEnumerator PurchaseProductCompleted(bool success, Product product)
         {
-            yield return new WaitForEndOfFrame();
+            yield return new WaitForSecondsRealtime(0.2f);
             isPurchasing = false;
             productIdPurchase = "";
-            GetLoading().SetActive(false);
             OnPurchaseCompleted(success, product);
             OnPurchaseProduct?.Invoke(success, product);
+            GetLoading().SetActive(false);
         }
 
         public virtual void RestorePurchases(Action<bool, string> callback)
