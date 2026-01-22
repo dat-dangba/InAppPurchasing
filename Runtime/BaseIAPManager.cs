@@ -316,7 +316,18 @@ namespace DBD.InAppPurchasing
                 return;
             }
 
-            storeController.RestoreTransactions(callback);
+            GetLoading().SetActive(true);
+            storeController.RestoreTransactions((b, s) =>
+            {
+                StartCoroutine(RestorePurchaseCompleted(callback, b, s));
+                GetLoading().SetActive(false);
+            });
+        }
+
+        private IEnumerator RestorePurchaseCompleted(Action<bool, string> callback, bool b, string s)
+        {
+            yield return new WaitForSecondsRealtime(0.2f);
+            callback.Invoke(b, s);
         }
 
         public virtual bool IsRemoveAds()
