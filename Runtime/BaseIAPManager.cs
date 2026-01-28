@@ -29,7 +29,7 @@ namespace DBD.InAppPurchasing
 
         protected abstract GameObject GetLoading();
         protected abstract void OnConnectCompleted(bool success);
-        protected abstract void OnPurchaseCompleted(bool success, Product product);
+        protected abstract void OnPurchaseCompleted(bool success, Product product, Order order);
 
         protected virtual void Awake()
         {
@@ -133,13 +133,13 @@ namespace DBD.InAppPurchasing
             if (product == null)
             {
                 Debug.Log("iap - Could not find product in order.");
-                StartCoroutine(PurchaseProductCompleted(false, null));
+                StartCoroutine(PurchaseProductCompleted(false, null, null));
                 return;
             }
 
             //Add the purchased product to the players inventory
             AddPurchasedProductId(order.CartOrdered.Items());
-            StartCoroutine(PurchaseProductCompleted(true, product));
+            StartCoroutine(PurchaseProductCompleted(true, product, order));
 
             Debug.Log($"iap - Purchase complete - Product: {product.definition.id}");
 
@@ -178,7 +178,7 @@ namespace DBD.InAppPurchasing
             Debug.Log($"iap - Purchase failed reason {order.FailureReason.ToString()}");
             Debug.Log($"iap - Purchase failed details {order.Details}");
 
-            StartCoroutine(PurchaseProductCompleted(false, product));
+            StartCoroutine(PurchaseProductCompleted(false, product, order));
         }
 
         private void OnProductsFetched(List<Product> products)
@@ -280,7 +280,7 @@ namespace DBD.InAppPurchasing
             {
                 Debug.Log("iap - Store not connect.");
 
-                StartCoroutine(PurchaseProductCompleted(false, null));
+                StartCoroutine(PurchaseProductCompleted(false, null, null));
                 return;
             }
 
@@ -289,7 +289,7 @@ namespace DBD.InAppPurchasing
             if (product == null)
             {
                 Debug.Log("iap - Could not find product purchase.");
-                StartCoroutine(PurchaseProductCompleted(false, null));
+                StartCoroutine(PurchaseProductCompleted(false, null, null));
                 return;
             }
 
@@ -297,12 +297,12 @@ namespace DBD.InAppPurchasing
             storeController.PurchaseProduct(product);
         }
 
-        private IEnumerator PurchaseProductCompleted(bool success, Product product)
+        private IEnumerator PurchaseProductCompleted(bool success, Product product, Order order)
         {
             yield return new WaitForSecondsRealtime(0.2f);
             isPurchasing = false;
             productIdPurchase = "";
-            OnPurchaseCompleted(success, product);
+            OnPurchaseCompleted(success, product, order);
             OnPurchaseProduct?.Invoke(success, product);
             GetLoading().SetActive(false);
         }
