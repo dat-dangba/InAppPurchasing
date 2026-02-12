@@ -300,10 +300,15 @@ namespace DBD.InAppPurchasing
         private IEnumerator PurchaseProductCompleted(bool success, Product product, Order order)
         {
             yield return new WaitForSecondsRealtime(0.2f);
-            isPurchasing = false;
+
+            if (isPurchasing)
+            {
+                isPurchasing = false;
+                OnPurchaseCompleted(success, product, order);
+                OnPurchaseProduct?.Invoke(success, product);
+            }
+
             productIdPurchase = "";
-            OnPurchaseCompleted(success, product, order);
-            OnPurchaseProduct?.Invoke(success, product);
             GetLoading().SetActive(false);
         }
 
