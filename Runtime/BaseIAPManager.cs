@@ -166,7 +166,6 @@ namespace DBD.InAppPurchasing
             CrossPlatformValidator validator = new CrossPlatformValidator(GetSecurityData(), Application.identifier);
             try
             {
-                // Trả về danh sách sản phẩm hợp lệ trong receipt
                 var result = validator.Validate(receipt);
                 foreach (IPurchaseReceipt productReceipt in result)
                 {
