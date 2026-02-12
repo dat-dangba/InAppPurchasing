@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Purchasing;
+using UnityEngine.Purchasing.Security;
 
 namespace DBD.InAppPurchasing
 {
@@ -28,6 +29,8 @@ namespace DBD.InAppPurchasing
         public bool IsConnected { get; private set; }
 
         protected abstract GameObject GetLoading();
+        protected abstract bool IsVerifyPurchase();
+        protected abstract byte[] GetSecurityData();
         protected abstract void OnConnectCompleted(bool success);
         protected abstract void OnPurchaseCompleted(bool success, Product product, Order order);
 
@@ -137,6 +140,17 @@ namespace DBD.InAppPurchasing
                 return;
             }
 
+            if (IsVerifyPurchase())
+            {
+                bool isVerified = ValidatePurchase(order.Info.Receipt);
+                if (!isVerified)
+                {
+                    Debug.Log($"iap - Validate false - Product: {product.definition.id}");
+                    StartCoroutine(PurchaseProductCompleted(false, product, order));
+                    return;
+                }
+            }
+
             //Add the purchased product to the players inventory
             AddPurchasedProductId(order.CartOrdered.Items());
             StartCoroutine(PurchaseProductCompleted(true, product, order));
@@ -144,6 +158,34 @@ namespace DBD.InAppPurchasing
             Debug.Log($"iap - Purchase complete - Product: {product.definition.id}");
 
             storeController.ConfirmPurchase(order);
+        }
+
+        private bool ValidatePurchase(string receipt)
+        {
+#if UNITY_ANDROID
+            CrossPlatformValidator validator = new CrossPlatformValidator(GetSecurityData(), Application.identifier);
+            try
+            {
+                // Trả về danh sách sản phẩm hợp lệ trong receipt
+                var result = validator.Validate(receipt);
+                foreach (IPurchaseReceipt productReceipt in result)
+                {
+                    if (productReceipt.productID == productIdPurchase)
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+            catch (IAPSecurityException)
+            {
+                return false;
+            }
+#elif UNITY_IOS || UNITY_EDITOR
+            return true;
+#endif
+            return false;
         }
 
         private void OnPurchaseConfirmed(Order order)
