@@ -163,7 +163,7 @@ namespace DBD.InAppPurchasing
         private bool ValidatePurchase(string receipt)
         {
 #if UNITY_ANDROID
-            CrossPlatformValidator validator = new CrossPlatformValidator(GetSecurityData(), Application.identifier);
+            CrossPlatformValidator validator = new CrossPlatformValidator(GetGooglePublicKey(), Application.identifier);
             try
             {
                 var result = validator.Validate(receipt);
@@ -183,8 +183,14 @@ namespace DBD.InAppPurchasing
             }
 #elif UNITY_IOS || UNITY_EDITOR
             return true;
-#endif
+#else
             return false;
+#endif
+        }
+
+        private byte[] GetGooglePublicKey()
+        {
+            return Application.identifier == "vn.tapbi.testinappsubscription" ? TestTangle.Data() : GetSecurityData();
         }
 
         private void OnPurchaseConfirmed(Order order)
